@@ -54,7 +54,7 @@ program
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('    --no-view', 'use static html instead of view engine')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
+  .option('-c, --css <engine>', 'add stylesheet <engine> support (css|less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv)
@@ -139,14 +139,18 @@ function createApplication (name, dir) {
   // Package
   var pkg = {
     name: name,
-    version: '0.0.0',
+    version: '0.1.0',
     private: true,
     scripts: {
-      start: 'node ./bin/www'
+      start: 'node ./bin/www',
+      prettier: 'prettier --write **/*.js'
     },
     dependencies: {
       'debug': '~2.6.9',
       'express': '~4.16.1'
+    },
+    devDependencies: {
+      'prettier': '^1.17.1'
     }
   }
 
@@ -182,27 +186,35 @@ function createApplication (name, dir) {
   }
 
   mkdir(dir, 'public')
-  mkdir(dir, 'public/javascripts')
-  mkdir(dir, 'public/images')
-  mkdir(dir, 'public/stylesheets')
+
+  if (program.view) {
+    mkdir(dir, 'public/javascripts')
+    mkdir(dir, 'public/images')
+  }
+
+  if (program.css) {
+    mkdir(dir, 'public/stylesheets')
+  }
 
   // copy css templates
-  switch (program.css) {
-    case 'less':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
-      break
-    case 'stylus':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.styl')
-      break
-    case 'compass':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
-      break
-    case 'sass':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.sass')
-      break
-    default:
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
-      break
+  if (program.css) {
+    switch (program.css) {
+      case 'less':
+        copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
+        break
+      case 'stylus':
+        copyTemplateMulti('css', dir + '/public/stylesheets', '*.styl')
+        break
+      case 'compass':
+        copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
+        break
+      case 'sass':
+        copyTemplateMulti('css', dir + '/public/stylesheets', '*.sass')
+        break
+      case 'css':
+        copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
+        break
+    }
   }
 
   // copy route templates
