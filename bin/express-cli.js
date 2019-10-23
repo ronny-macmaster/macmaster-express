@@ -146,8 +146,8 @@ function createApplication (name, dir) {
       prettier: 'prettier --write **/*.js'
     },
     dependencies: {
-      'debug': '~2.6.9',
-      'express': '~4.16.1'
+      'debug': '^2.6.9',
+      'express': '^4.16.1'
     },
     devDependencies: {
       'prettier': '^1.17.1'
@@ -170,7 +170,7 @@ function createApplication (name, dir) {
   // Request logger
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
-  pkg.dependencies.morgan = '~1.9.1'
+  pkg.dependencies.morgan = '^1.9.1'
 
   // Body parsers
   app.locals.uses.push('express.json()')
@@ -178,8 +178,13 @@ function createApplication (name, dir) {
 
   // Cookie parser
   app.locals.modules.cookieParser = 'cookie-parser'
-  app.locals.uses.push('cookieParser()')
-  pkg.dependencies['cookie-parser'] = '~1.4.4'
+  app.locals.uses.push("cookieParser('secret')")
+  pkg.dependencies['cookie-parser'] = '^1.4.4'
+
+  // Sessions
+  app.locals.modules.session = 'express-parser'
+  app.locals.uses.push("session({ secret: 'secret' })")
+  pkg.dependencies['express-session'] = '^1.17.0'
 
   if (dir !== '.') {
     mkdir(dir, '.')
@@ -224,7 +229,7 @@ function createApplication (name, dir) {
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
-    pkg.dependencies['http-errors'] = '~1.6.3'
+    pkg.dependencies['http-errors'] = '^1.6.3'
     switch (program.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
@@ -266,7 +271,7 @@ function createApplication (name, dir) {
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['less-middleware'] = '~2.2.1'
+      pkg.dependencies['less-middleware'] = '^2.2.1'
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
@@ -296,23 +301,23 @@ function createApplication (name, dir) {
         engine: 'dust',
         render: 'adaro.dust()'
       }
-      pkg.dependencies.adaro = '~1.0.4'
+      pkg.dependencies.adaro = '^1.0.4'
       break
     case 'ejs':
       app.locals.view = { engine: 'ejs' }
-      pkg.dependencies.ejs = '~2.6.1'
+      pkg.dependencies.ejs = '^2.6.1'
       break
     case 'hbs':
       app.locals.view = { engine: 'hbs' }
-      pkg.dependencies.hbs = '~4.0.4'
+      pkg.dependencies.hbs = '^4.0.4'
       break
     case 'hjs':
       app.locals.view = { engine: 'hjs' }
-      pkg.dependencies.hjs = '~0.0.6'
+      pkg.dependencies.hjs = '^0.0.6'
       break
     case 'jade':
       app.locals.view = { engine: 'jade' }
-      pkg.dependencies.jade = '~1.11.0'
+      pkg.dependencies.jade = '^1.11.0'
       break
     case 'pug':
       app.locals.view = { engine: 'pug' }
@@ -320,11 +325,11 @@ function createApplication (name, dir) {
       break
     case 'twig':
       app.locals.view = { engine: 'twig' }
-      pkg.dependencies.twig = '~0.10.3'
+      pkg.dependencies.twig = '^0.10.3'
       break
     case 'vash':
       app.locals.view = { engine: 'vash' }
-      pkg.dependencies.vash = '~0.12.6'
+      pkg.dependencies.vash = '^0.12.6'
       break
     default:
       app.locals.view = false
